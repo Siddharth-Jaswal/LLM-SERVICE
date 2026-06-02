@@ -74,7 +74,7 @@ We use Pydantic models to strictly type our incoming and outgoing JSON. This giv
 
 ---
 
-## 🛠 Prerequisites (Local Models)
+##  Prerequisites (Local Models)
 
 Currently, this gateway is configured to proxy requests to **LM Studio** running locally. Before starting this service, ensure you have:
 1. **LM Studio** installed and open on your machine.
@@ -139,7 +139,7 @@ curl -X POST "http://localhost:8000/vision" \
 
 ---
 
-## 🌐 Using this API in Other Projects
+##  Using this API in Other Projects
 
 The real power of this gateway is that it acts as an **abstraction layer**. You can have multiple other projects (websites, discord bots, scripts) all using your local LLM by simply sending HTTP requests to this service, exactly as if you were calling the official OpenAI API. You never need to write messy base64 image encoders in your client apps!
 
