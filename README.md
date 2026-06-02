@@ -99,10 +99,18 @@ Currently, this gateway is configured to proxy requests to **LM Studio** running
    pip install -r llm_service/requirements.txt
    ```
 
-3. **Start the server:**
-   Ensure you run the module correctly from the root directory (one level above `llm_service`):
+3. **Set up your environment variables:**
+   Copy the example environment file to activate the configuration (which controls the API port and LM Studio connection details).
    ```bash
-   uvicorn llm_service.main:app --host 0.0.0.0 --port 8000 --reload
+   cp .env.example .env
+   # On Windows you can use: copy .env.example .env
+   ```
+   Feel free to edit `.env` if your LM Studio is running on a different port!
+
+4. **Start the server:**
+   Ensure you run the module as a package from the root directory (one level above `llm_service`):
+   ```bash
+   python -m llm_service.main
    ```
 
 ---
