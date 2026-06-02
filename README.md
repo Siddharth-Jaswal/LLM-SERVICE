@@ -74,6 +74,15 @@ We use Pydantic models to strictly type our incoming and outgoing JSON. This giv
 
 ---
 
+## 🛠 Prerequisites (Local Models)
+
+Currently, this gateway is configured to proxy requests to **LM Studio** running locally. Before starting this service, ensure you have:
+1. **LM Studio** installed and open on your machine.
+2. A model downloaded and loaded into LM Studio (e.g., `qwen3-vl-8b-instruct` if you want to use the vision capabilities).
+3. The **Local Server** started in LM Studio (typically running on port `1234`).
+
+---
+
 ##  How to Run
 
 1. **Set up the virtual environment:**
@@ -126,4 +135,48 @@ curl -X POST "http://localhost:8000/vision" \
      -F "message=Describe this image." \
      -F "stream=false" \
      -F "image=@/path/to/your/image.jpg"
+```
+
+---
+
+## 🌐 Using this API in Other Projects
+
+The real power of this gateway is that it acts as an **abstraction layer**. You can have multiple other projects (websites, discord bots, scripts) all using your local LLM by simply sending HTTP requests to this service, exactly as if you were calling the official OpenAI API. You never need to write messy base64 image encoders in your client apps!
+
+Here is how you would call this service from another Python project using the `requests` library.
+
+### Basic Chat Request
+```python
+import requests
+
+API_URL = "http://localhost:8000/chat"
+payload = {
+    "message": "Summarize the plot of the Matrix in one sentence.",
+    "stream": False
+}
+
+response = requests.post(API_URL, json=payload)
+print(response.json()["response"])
+```
+
+### Vision Request (Image Upload)
+You don't need to convert your image to Base64 in your client app. Just attach the raw file!
+
+```python
+import requests
+
+API_URL = "http://localhost:8000/vision"
+
+# 1. Open the image file in binary reading mode
+with open("my_photo.jpg", "rb") as image_file:
+    files = {"image": image_file}
+    data = {
+        "message": "Describe exactly what you see in this picture.",
+        "stream": False
+    }
+
+    # 2. Fire it off to your LLM Gateway!
+    response = requests.post(API_URL, data=data, files=files)
+
+print(response.json()["response"])
 ```
