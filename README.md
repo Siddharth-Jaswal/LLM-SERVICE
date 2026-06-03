@@ -1,6 +1,6 @@
 # LLM Service Gateway
 
-Welcome to the **LLM Service Gateway**! This service acts as a simple, scalable, and highly adaptable middleware between your applications and Large Language Models (LLMs). Right now, it's configured to talk to a local LM Studio instance, but the architecture is specifically designed to let you plug and play any other provider (like vLLM, OpenAI, or Anthropic) in the future without touching the core routing logic.
+Welcome to the **LLM Service Gateway**! This service acts as a simple, scalable, and highly adaptable middleware between your applications and Large Language Models (LLMs). It natively supports both **local models** (via LM Studio) and **cloud models** (via official OpenAI endpoints). The architecture is specifically designed with strict dependency injection so you can plug and play providers using a simple `.env` toggle without touching the core routing logic.
 
 ##  Architecture Overview
 
@@ -67,19 +67,29 @@ The brain of the operation. The `ChatService` sits between the Routes and the Pr
 ### 3. Providers (`providers/`)
 This is where the magic happens. 
 - **`base.py`** defines an unbreakable contract (an Abstract Base Class). Every provider *must* implement `chat`, `vision`, and `models`.
-- **`lmstudio.py`** is our active provider. It uses `httpx.AsyncClient` to asynchronously send requests to your local LM Studio. It natively supports parsing Server-Sent Events (SSE) to yield live text streams token by token.
+- **`lmstudio.py`** securely connects to your local machine on port `1234`.
+- **`openai.py`** connects directly to `api.openai.com` and securely passes your `OPENAI_API_KEY` from the environment.
+Both providers use `httpx.AsyncClient` and natively support Server-Sent Events (SSE) for live streaming tokens.
 
 ### 4. Schemas (`schemas/`)
 We use Pydantic models to strictly type our incoming and outgoing JSON. This gives us automatic validation and beautiful, self-documenting Swagger UI pages.
 
 ---
 
-##  Prerequisites (Local Models)
+## Prerequisites & Provider Setup
 
-Currently, this gateway is configured to proxy requests to **LM Studio** running locally. Before starting this service, ensure you have:
+This gateway allows you to toggle between Local Models and Cloud Models by simply changing `LLM_PROVIDER` in your `.env` file.
+
+### Option A: Local Models (LM Studio)
+Set `LLM_PROVIDER=lmstudio` in your `.env` file. Ensure you have:
 1. **LM Studio** installed and open on your machine.
 2. A model downloaded and loaded into LM Studio (e.g., `qwen3-vl-8b-instruct` if you want to use the vision capabilities).
 3. The **Local Server** started in LM Studio (typically running on port `1234`).
+
+### Option B: Cloud Models (OpenAI API)
+Set `LLM_PROVIDER=openai` in your `.env` file. Ensure you have:
+1. An official OpenAI API Key.
+2. Added `OPENAI_API_KEY=sk-your-key-here` into your `.env` file.
 
 ---
 

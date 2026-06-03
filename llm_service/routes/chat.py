@@ -8,8 +8,13 @@ from typing import Dict, Any
 
 router = APIRouter()
 
+from llm_service.core.config import settings
+
 # Dependency injection for the provider
 def get_provider():
+    if settings.LLM_PROVIDER.lower() == "openai":
+        from llm_service.providers.openai import OpenAIProvider
+        return OpenAIProvider()
     return LMStudioProvider()
 
 # Dependency injection for the service
